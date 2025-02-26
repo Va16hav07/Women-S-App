@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { 
+  View, Text, TextInput, TouchableOpacity, 
+  StyleSheet, ScrollView, Alert, Platform 
+} from 'react-native';
 import { Link, router } from 'expo-router';
 import { UserPlus, Mail, Lock, Phone, User, Calendar } from 'lucide-react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -16,53 +19,76 @@ export default function SignUp() {
     confirmPassword: '',
   });
 
+  const validateEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    return /^\d{10}$/.test(phone);
+  };
+
+  const validateDOB = (dob: string) => {
+    return /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/.test(dob);
+  };
+
   const handleSignUp = async () => {
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.dob ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      Alert.alert('Error', 'Please fill in all fields');
+    const { name, email, phone, dob, password, confirmPassword } = formData;
+
+    if (!name || !email || !phone || !dob || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+    if (!validateEmail(email)) {
+      Alert.alert('Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (!validatePhone(phone)) {
+      Alert.alert('Error', 'Phone number must be 10 digits.');
+      return;
+    }
+
+    if (!validateDOB(dob)) {
+      Alert.alert('Error', 'Date of Birth must be in DD/MM/YYYY format.');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
       return;
     }
 
     setLoading(true);
     try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(user, { displayName: name });
 
-      await updateProfile(user, {
-        displayName: formData.name,
-      });
-
-      router.replace('/(tabs)');
-    } catch (error) {
-      Alert.alert('Error', error.message);
+      router.replace('/(tabs)'); // Navigate to the main screen
+    } catch (error: any) {
+      Alert.alert('Sign Up Failed', error.message || 'Something went wrong.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+      {/* Header Section */}
       <View style={styles.header}>
         <UserPlus size={48} color="#FF4785" />
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.subtitle}>Sign up to get started</Text>
       </View>
 
+      {/* Form Section */}
       <View style={styles.form}>
+        {/* Full Name */}
         <View style={styles.inputContainer}>
           <User size={20} color="#666" />
           <TextInput
@@ -71,9 +97,11 @@ export default function SignUp() {
             value={formData.name}
             onChangeText={(text) => setFormData({ ...formData, name: text })}
             editable={!loading}
+            returnKeyType="next"
           />
         </View>
 
+        {/* Email */}
         <View style={styles.inputContainer}>
           <Mail size={20} color="#666" />
           <TextInput
@@ -84,9 +112,11 @@ export default function SignUp() {
             keyboardType="email-address"
             autoCapitalize="none"
             editable={!loading}
+            returnKeyType="next"
           />
         </View>
 
+        {/* Phone Number */}
         <View style={styles.inputContainer}>
           <Phone size={20} color="#666" />
           <TextInput
@@ -95,10 +125,13 @@ export default function SignUp() {
             value={formData.phone}
             onChangeText={(text) => setFormData({ ...formData, phone: text })}
             keyboardType="phone-pad"
+            maxLength={10}
             editable={!loading}
+            returnKeyType="next"
           />
         </View>
 
+        {/* Date of Birth */}
         <View style={styles.inputContainer}>
           <Calendar size={20} color="#666" />
           <TextInput
@@ -107,9 +140,11 @@ export default function SignUp() {
             value={formData.dob}
             onChangeText={(text) => setFormData({ ...formData, dob: text })}
             editable={!loading}
+            returnKeyType="next"
           />
         </View>
 
+        {/* Password */}
         <View style={styles.inputContainer}>
           <Lock size={20} color="#666" />
           <TextInput
@@ -119,9 +154,11 @@ export default function SignUp() {
             onChangeText={(text) => setFormData({ ...formData, password: text })}
             secureTextEntry
             editable={!loading}
+            returnKeyType="next"
           />
         </View>
 
+        {/* Confirm Password */}
         <View style={styles.inputContainer}>
           <Lock size={20} color="#666" />
           <TextInput
@@ -131,9 +168,11 @@ export default function SignUp() {
             onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
             secureTextEntry
             editable={!loading}
+            returnKeyType="done"
           />
         </View>
 
+        {/* Sign Up Button */}
         <TouchableOpacity 
           style={[styles.button, loading && styles.buttonDisabled]} 
           onPress={handleSignUp}
@@ -142,6 +181,7 @@ export default function SignUp() {
           <Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Sign Up'}</Text>
         </TouchableOpacity>
 
+        {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already have an account? </Text>
           <Link href="/sign-in" style={styles.link}>
@@ -153,6 +193,7 @@ export default function SignUp() {
   );
 }
 
+/* --- Styles --- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -176,7 +217,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   form: {
-    gap: 16,
+    gap: Platform.select({ ios: 12, android: 12, default: 16 }),
   },
   inputContainer: {
     flexDirection: 'row',

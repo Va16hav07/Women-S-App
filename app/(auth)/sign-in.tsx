@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, useWindowDimensions, Platform } from 'react-native';
+import { 
+  View, Text, TextInput, TouchableOpacity, 
+  StyleSheet, Alert, useWindowDimensions, Platform 
+} from 'react-native';
 import { Link, router } from 'expo-router';
 import { LogIn, Mail, Lock } from 'lucide-react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -16,17 +19,17 @@ export default function SignIn() {
   const contentWidth = isTablet ? Math.min(500, width * 0.8) : width * 0.9;
 
   const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Missing Fields', 'Please enter both email and password.');
       return;
     }
 
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/(tabs)');
-    } catch (error) {
-      Alert.alert('Error', error.message);
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      router.replace('/(tabs)'); // Navigate to home screen
+    } catch (error: any) {
+      Alert.alert('Sign In Failed', error.message || 'Something went wrong.');
     } finally {
       setLoading(false);
     }
@@ -35,38 +38,47 @@ export default function SignIn() {
   return (
     <View style={styles.container}>
       <View style={[styles.content, { width: contentWidth }]}>
+        {/* Header Section */}
         <View style={[styles.header, { marginTop: height * 0.1 }]}>
           <LogIn size={isSmallDevice ? 36 : 48} color="#FF4785" />
           <Text style={[styles.title, isSmallDevice && styles.smallTitle]}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to continue</Text>
         </View>
 
+        {/* Form Section */}
         <View style={styles.form}>
+          {/* Email Input */}
           <View style={styles.inputContainer}>
             <Mail size={isSmallDevice ? 18 : 20} color="#666" />
             <TextInput
               style={[styles.input, isSmallDevice && styles.smallInput]}
-              placeholder="Email"
+              placeholder="Enter your email address"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
               editable={!loading}
+              returnKeyType="next"
+              accessibilityLabel="Email Address"
             />
           </View>
 
+          {/* Password Input */}
           <View style={styles.inputContainer}>
             <Lock size={isSmallDevice ? 18 : 20} color="#666" />
             <TextInput
               style={[styles.input, isSmallDevice && styles.smallInput]}
-              placeholder="Password"
+              placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
               editable={!loading}
+              returnKeyType="done"
+              accessibilityLabel="Password"
             />
           </View>
 
+          {/* Sign In Button */}
           <TouchableOpacity 
             style={[styles.button, loading && styles.buttonDisabled]} 
             onPress={handleSignIn}
@@ -75,6 +87,7 @@ export default function SignIn() {
             <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
           </TouchableOpacity>
 
+          {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
             <Link href="/sign-up" style={styles.link}>
@@ -87,6 +100,7 @@ export default function SignIn() {
   );
 }
 
+/* --- Styles --- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -163,3 +177,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
