@@ -1,23 +1,18 @@
 import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-
-declare global {
-  interface Window {
-    frameworkReady?: () => void;
-  }
-}
+import { auth } from '../lib/firebase';
 
 export default function RootLayout() {
   useEffect(() => {
-    window.frameworkReady?.();
+    if (typeof window !== 'undefined') {
+      window.frameworkReady?.();
+    }
   }, []);
 
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <Slot />
       <StatusBar style="auto" />
     </>
   );
