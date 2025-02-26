@@ -20,7 +20,7 @@ const DUMMY_ALERTS = [
 ];
 
 export default function AlertsScreen() {
-  const renderAlert = ({ item }) => (
+  const renderAlert = ({ item }: { item: { id: string; type: string; title: string; location: string; time: string } }) => (
     <TouchableOpacity style={styles.alertCard}>
       <View style={styles.alertHeader}>
         <AlertTriangle
