@@ -13,9 +13,7 @@
     "splash": {
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
@@ -35,9 +33,10 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
         "FOREGROUND_SERVICE",
-        "WAKE_LOCK",
-        "FOREGROUND_SERVICE_LOCATION"
-      ]
+        "FOREGROUND_SERVICE_LOCATION",
+        "WAKE_LOCK"
+      ],
+      "foregroundServiceType": ["location", "microphone"]
     },
     "web": {
       "bundler": "metro",
@@ -53,12 +52,7 @@
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-      [
-        "expo-notifications",
-        {
-          "mode": "automatic"
-        }
-      ]
+      ["expo-notifications", { "mode": "automatic" }]
     ],
     "experiments": {
       "typedRoutes": true
