@@ -52,11 +52,6 @@ export default function MenuScreen() {
           title="Privacy"
           onPress={() => router.push('/privacy')}
         />
-        <MenuItem
-          icon={<Phone size={24} color="#666" />}
-          title="Contact Us"
-          onPress={() => router.push('/contact-us')}
-        />
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
