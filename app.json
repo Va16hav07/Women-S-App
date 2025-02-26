@@ -1,5 +1,6 @@
 {
   "expo": {
+    "projectId": "52A70D4C-9D92-48ED-A99C-A352828F9B1C",
     "name": "bolt-expo-nativewind",
     "slug": "bolt-expo-nativewind",
     "version": "1.0.0",
@@ -15,12 +16,16 @@
       "**/*"
     ],
     "ios": {
+      "infoPlist": {
+    "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
+    "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background."
+  },
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.safetravels"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.yourcompany.safetravels",
