@@ -1,7 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Switch, 
+  ScrollView, 
+  TouchableOpacity, 
+  SafeAreaView,
+  Platform,
+  Dimensions,
+  StatusBar
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Link } from 'expo-router';
+
+// Get screen dimensions
+const { width, height } = Dimensions.get('window');
+
+// Calculate responsive sizes
+const scale = Math.min(width, height) / 375; // Base scale on iPhone 8 dimensions
+const normalize = (size: number) => Math.round(size * scale);
 
 export default function SettingsScreen() {
   const [alertsEnabled, setAlertsEnabled] = useState(false);
@@ -15,15 +33,31 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar 
+        backgroundColor="#fff" 
+        barStyle="dark-content" 
+      />
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons 
+            name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back'} 
+            size={normalize(24)} 
+            color="#333" 
+          />
         </TouchableOpacity>
         <Text style={styles.headerText}>Settings</Text>
-        <View style={{ width: 24 }} />
+        <View style={{ width: normalize(24) }} />
       </View>
       
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <View style={styles.container}>
           
           <View style={styles.sectionContainer}>
@@ -70,15 +104,22 @@ export default function SettingsScreen() {
               />
               <View style={styles.separator} />
               <Link href="/contact-support" asChild>
-                <TouchableOpacity style={styles.settingItem}>
+                <TouchableOpacity 
+                  style={styles.settingItem}
+                  activeOpacity={0.7}
+                >
                   <View style={styles.settingInfo}>
-                    <Ionicons name="chatbubble-ellipses" size={24} color="#ff6b81" style={styles.icon} />
-                    <View>
+                    <Ionicons name="chatbubble-ellipses" size={normalize(24)} color="#ff6b81" style={styles.icon} />
+                    <View style={styles.textContainer}>
                       <Text style={styles.settingTitle}>Contact Support</Text>
-                      <Text style={styles.settingDescription}>Get help with any issues</Text>
+                      <Text style={styles.settingDescription} numberOfLines={2}>Get help with any issues</Text>
                     </View>
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color="#999" />
+                  <Ionicons 
+                    name={Platform.OS === 'ios' ? 'chevron-forward' : 'arrow-forward'} 
+                    size={normalize(20)} 
+                    color="#999" 
+                  />
                 </TouchableOpacity>
               </Link>
               <View style={styles.separator} />
@@ -90,7 +131,10 @@ export default function SettingsScreen() {
             </View>
           </View>
           
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity 
+            style={styles.button}
+            activeOpacity={0.8}
+          >
             <Text style={styles.buttonText}>Save Settings</Text>
           </TouchableOpacity>
         </View>
@@ -111,10 +155,10 @@ function SettingItem({ icon, title, description, value, onValueChange }: Setting
   return (
     <View style={styles.settingItem}>
       <View style={styles.settingInfo}>
-        <Ionicons name={icon} size={24} color="#ff6b81" style={styles.icon} />
-        <View>
+        <Ionicons name={icon} size={normalize(24)} color="#ff6b81" style={styles.icon} />
+        <View style={styles.textContainer}>
           <Text style={styles.settingTitle}>{title}</Text>
-          <Text style={styles.settingDescription}>{description}</Text>
+          <Text style={styles.settingDescription} numberOfLines={2}>{description}</Text>
         </View>
       </View>
       <Switch
@@ -122,6 +166,7 @@ function SettingItem({ icon, title, description, value, onValueChange }: Setting
         onValueChange={onValueChange}
         trackColor={{ false: '#d1d1d1', true: '#ff9eb5' }}
         thumbColor={value ? '#ff6b81' : '#f4f3f4'}
+        ios_backgroundColor="#d1d1d1"
       />
     </View>
   );
@@ -136,15 +181,23 @@ interface TouchableOptionProps {
 
 function TouchableOption({ icon, title, description, onPress }: TouchableOptionProps) {
   return (
-    <TouchableOpacity style={styles.settingItem} onPress={onPress}>
+    <TouchableOpacity 
+      style={styles.settingItem} 
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <View style={styles.settingInfo}>
-        <Ionicons name={icon} size={24} color="#ff6b81" style={styles.icon} />
-        <View>
+        <Ionicons name={icon} size={normalize(24)} color="#ff6b81" style={styles.icon} />
+        <View style={styles.textContainer}>
           <Text style={styles.settingTitle}>{title}</Text>
-          <Text style={styles.settingDescription}>{description}</Text>
+          <Text style={styles.settingDescription} numberOfLines={2}>{description}</Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#999" />
+      <Ionicons 
+        name={Platform.OS === 'ios' ? 'chevron-forward' : 'arrow-forward'} 
+        size={normalize(20)} 
+        color="#999" 
+      />
     </TouchableOpacity>
   );
 }
@@ -153,93 +206,108 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingHorizontal: normalize(15),
+    paddingVertical: normalize(15),
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     backgroundColor: '#fff',
   },
   backButton: {
-    padding: 5,
+    padding: normalize(5),
   },
   headerText: {
-    fontSize: 20,
+    fontSize: normalize(20),
     fontWeight: 'bold',
     color: '#333',
+    textAlign: 'center',
   },
   scrollView: {
     flex: 1,
   },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    padding: 20,
+    padding: normalize(16),
+    paddingBottom: normalize(30),
   },
   sectionContainer: {
-    marginBottom: 25,
+    marginBottom: normalize(22),
   },
   sectionHeader: {
-    fontSize: 18,
+    fontSize: normalize(18),
     fontWeight: '600',
     color: '#666',
-    marginBottom: 10,
-    marginLeft: 5,
+    marginBottom: normalize(10),
+    marginLeft: normalize(5),
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    borderRadius: normalize(12),
+    padding: normalize(15),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: normalize(12),
   },
   settingInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    marginRight: normalize(10),
   },
   icon: {
-    marginRight: 12,
+    marginRight: normalize(12),
+  },
+  textContainer: {
+    flex: 1,
   },
   settingTitle: {
-    fontSize: 16,
+    fontSize: normalize(16),
     fontWeight: '500',
     color: '#333',
   },
   settingDescription: {
-    fontSize: 13,
+    fontSize: normalize(13),
     color: '#888',
-    maxWidth: '90%',
-    marginTop: 2,
+    marginTop: normalize(2),
   },
   separator: {
     height: 1,
     backgroundColor: '#f0f0f0',
-    marginVertical: 5,
+    marginVertical: normalize(5),
   },
   button: {
     backgroundColor: '#ff6b81',
-    borderRadius: 10,
-    padding: 15,
+    borderRadius: normalize(10),
+    padding: normalize(15),
     alignItems: 'center',
-    marginTop: 15,
-    marginBottom: 30,
+    marginTop: normalize(15),
+    marginBottom: normalize(30),
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: normalize(16),
     fontWeight: '600',
   },
 });

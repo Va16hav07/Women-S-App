@@ -7,10 +7,29 @@ import {
   FlatList,
   TextInput,
   Modal,
+  Dimensions,
+  Platform,
+  StatusBar,
+  SafeAreaView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Plus, User, Phone, X } from 'lucide-react-native';
 
-const DUMMY_CONTACTS = [
+// Get screen dimensions
+const { width, height } = Dimensions.get('window');
+
+// Calculate responsive sizes
+const scale = Math.min(width, height) / 375; // Base scale on iPhone 8 dimensions
+const normalize = (size: number) => Math.round(size * scale);
+
+// Interface for Contact type
+interface Contact {
+  id: string;
+  name: string;
+  phone: string;
+}
+
+const DUMMY_CONTACTS: Contact[] = [
   {
     id: '1',
     name: 'Emergency Contact 1',
@@ -43,133 +62,176 @@ export default function ContactsScreen() {
     }
   };
 
-  const renderContact = ({ item }: { item: { id: string; name: string; phone: string } }) => (
+  const renderContact = ({ item }: { item: Contact }) => (
     <View style={styles.contactCard}>
       <View style={styles.contactInfo}>
-        <User size={24} color="#666" />
-        <View>
-          <Text style={styles.contactName}>{item.name}</Text>
-          <Text style={styles.contactPhone}>{item.phone}</Text>
+        <User size={normalize(24)} color="#666" />
+        <View style={styles.contactTextContainer}>
+          <Text style={styles.contactName} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.contactPhone} numberOfLines={1}>{item.phone}</Text>
         </View>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Emergency Contacts</Text>
-      
-      <FlatList
-        data={contacts}
-        renderItem={renderContact}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar 
+        backgroundColor="#fff" 
+        barStyle="dark-content" 
       />
+      <View style={styles.container}>
+        <Text style={styles.header}>Emergency Contacts</Text>
+        
+        <FlatList
+          data={contacts}
+          renderItem={renderContact}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setModalVisible(true)}>
-        <Plus size={24} color="#fff" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addButton}
+          activeOpacity={0.8}
+          onPress={() => setModalVisible(true)}>
+          <Plus size={normalize(24)} color="#fff" />
+        </TouchableOpacity>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Emergency Contact</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X size={24} color="#666" />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.modalContainer}
+          >
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Add Emergency Contact</Text>
+                <TouchableOpacity 
+                  onPress={() => setModalVisible(false)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <X size={normalize(24)} color="#666" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <User size={normalize(20)} color="#666" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contact Name"
+                  value={newContact.name}
+                  onChangeText={(text) => setNewContact({ ...newContact, name: text })}
+                  placeholderTextColor="#999"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Phone size={normalize(20)} color="#666" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Phone Number"
+                  value={newContact.phone}
+                  onChangeText={(text) => setNewContact({ ...newContact, phone: text })}
+                  keyboardType="phone-pad"
+                  placeholderTextColor="#999"
+                />
+              </View>
+
+              <TouchableOpacity 
+                style={styles.saveButton} 
+                onPress={addContact}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.saveButtonText}>Save Contact</Text>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.inputContainer}>
-              <User size={20} color="#666" />
-              <TextInput
-                style={styles.input}
-                placeholder="Contact Name"
-                value={newContact.name}
-                onChangeText={(text) => setNewContact({ ...newContact, name: text })}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Phone size={20} color="#666" />
-              <TextInput
-                style={styles.input}
-                placeholder="Phone Number"
-                value={newContact.phone}
-                onChangeText={(text) => setNewContact({ ...newContact, phone: text })}
-                keyboardType="phone-pad"
-              />
-            </View>
-
-            <TouchableOpacity style={styles.saveButton} onPress={addContact}>
-              <Text style={styles.saveButtonText}>Save Contact</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
+    padding: normalize(20),
   },
   header: {
-    fontSize: 24,
+    fontSize: normalize(24),
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: normalize(20),
     color: '#1a1a1a',
   },
   listContainer: {
-    gap: 16,
+    paddingBottom: normalize(80),
+    gap: normalize(16),
   },
   contactCard: {
     backgroundColor: '#f8f8f8',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: normalize(12),
+    padding: normalize(16),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
   contactInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: normalize(16),
+  },
+  contactTextContainer: {
+    flex: 1,
   },
   contactName: {
-    fontSize: 16,
+    fontSize: normalize(16),
     fontWeight: 'bold',
     color: '#1a1a1a',
   },
   contactPhone: {
-    fontSize: 14,
+    fontSize: normalize(14),
     color: '#666',
-    marginTop: 4,
+    marginTop: normalize(4),
   },
   addButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: normalize(20),
+    right: normalize(20),
     backgroundColor: '#FF4785',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: normalize(56),
+    height: normalize(56),
+    borderRadius: normalize(28),
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#FF4785',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
   },
   modalContainer: {
     flex: 1,
@@ -179,19 +241,31 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    width: '90%',
-    gap: 16,
+    borderRadius: normalize(12),
+    padding: normalize(20),
+    width: width * 0.9,
+    maxWidth: 500,
+    gap: normalize(16),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: normalize(16),
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: normalize(18),
     fontWeight: 'bold',
     color: '#1a1a1a',
   },
@@ -200,25 +274,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: normalize(8),
+    padding: normalize(12),
     backgroundColor: '#f8f8f8',
   },
   input: {
     flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
+    marginLeft: normalize(10),
+    fontSize: normalize(16),
+    color: '#333',
   },
   saveButton: {
     backgroundColor: '#FF4785',
-    padding: 16,
-    borderRadius: 8,
+    padding: normalize(16),
+    borderRadius: normalize(8),
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: normalize(16),
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: normalize(16),
     fontWeight: 'bold',
   },
 });
