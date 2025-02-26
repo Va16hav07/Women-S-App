@@ -17,9 +17,9 @@
     ],
     "ios": {
       "infoPlist": {
-    "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
-    "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background."
-  },
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background."
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.safetravels"
     },
@@ -48,6 +48,12 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency services.",
           "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location in the background for emergency tracking.",
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "mode": "automatic"
         }
       ]
     ],

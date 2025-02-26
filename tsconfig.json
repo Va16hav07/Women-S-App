@@ -2,9 +2,14 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-native",  // Added this to enable JSX in TypeScript
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "allowJs": true,  // Allows JavaScript files
+    "skipLibCheck": true,  // Skips type checking of declaration files
+    "noEmit": true,  // Prevents TypeScript from emitting compiled files
+    "isolatedModules": true  // Ensures modules are isolated for better compilation
   },
   "include": [
     "**/*.ts",
