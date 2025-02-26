@@ -38,7 +38,7 @@ export default function MenuScreen() {
 
       <View style={styles.section}>
         <MenuItem
-          icon={<User size={25} color="#666" />}
+          icon={<User size={24} color="#666" />}
           title="Profile"
           onPress={() => {}}
         />
