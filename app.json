@@ -17,27 +17,25 @@
     "ios": {
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
-        "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background."
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background.",
+        "UIBackgroundModes": ["location"]
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.safetravels"
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/images/icon.png",
+          "backgroundColor": "#ffffff"
+        },
+        "package": "com.yourcompany.safetravels",
+        "permissions": [
+          "ACCESS_COARSE_LOCATION",
+          "ACCESS_FINE_LOCATION",
+          "ACCESS_BACKGROUND_LOCATION",
+          "FOREGROUND_SERVICE"
+        ]
       },
-      "package": "com.yourcompany.safetravels",
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
-        "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_LOCATION",
-        "WAKE_LOCK"
-      ],
-      "foregroundServiceType": ["location", "microphone"]
-    },
     "web": {
       "bundler": "metro",
       "output": "single",

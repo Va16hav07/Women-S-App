@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert, useWindowDimensions } from 'react-native';
 import { TriangleAlert as AlertTriangle } from 'lucide-react-native';
-import { startLocationTracking, getCurrentLocation } from '../../lib/location';
+import { startLocationTracking, stopLocationTracking, getCurrentLocation } from '../../lib/location';
 import { sendEmergencySMS } from '../../lib/sms';
 import { registerForPushNotificationsAsync, sendPushNotification } from '../../lib/notifications';
 import * as Location from 'expo-location';
+
 
 // Conditionally import MapView to avoid web issues
 let MapView: any;
@@ -50,12 +51,22 @@ export default function HomeScreen() {
     };
 
     initializeLocation();
+
+    return () => {
+      stopLocationTracking(); // Stop tracking when exiting screen
+    };
   }, []);
 
   const handleEmergency = async () => {
-    if (!location) {
-      Alert.alert('Error', 'Unable to get your location. Please ensure location services are enabled.');
-      return;
+    let currentLocation = location;
+
+    if (!currentLocation) {
+      currentLocation = await getCurrentLocation();
+      if (!currentLocation) {
+        Alert.alert('Error', 'Unable to get your location. Please ensure location services are enabled.');
+        return;
+      }
+      setLocation(currentLocation);
     }
 
     try {
@@ -65,8 +76,8 @@ export default function HomeScreen() {
           { name: 'Emergency Contact 2', phone: '+0987654321' },
         ],
         {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
         }
       );
 
@@ -158,50 +169,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   map: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
   webLocationContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     padding: 20,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   webLocationText: {
-    fontSize: 18,
-    textAlign: 'center',
-    lineHeight: 28,
-  },
-  smallText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
     fontSize: 16,
-    color: 'red',
+    fontWeight: 'bold',
+    color: '#333',
     textAlign: 'center',
-    margin: 20,
   },
   emergencyButton: {
     position: 'absolute',
-    backgroundColor: '#FF4785',
+    backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   emergencyText: {
-    color: '#fff',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginTop: 2,
+    color: '#fff',
+    marginTop: 5,
+  },
+  smallText: {
+    fontSize: 14,
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'red',
+    textAlign: 'center',
+    padding: 20,
   },
 });
