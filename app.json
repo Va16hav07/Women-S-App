@@ -1,8 +1,9 @@
 {
   "expo": {
-    "projectId": "52A70D4C-9D92-48ED-A99C-A352828F9B1C",
+    "owner": "va16hav",
+    "projectId": "bf6483a5-8fd6-4c95-93b5-26be6cd37999",
     "name": "bolt-expo-nativewind",
-    "slug": "bolt-expo-nativewind",
+    "slug": "women",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,9 +13,7 @@
     "splash": {
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
@@ -32,8 +31,12 @@
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION"
-      ]
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "WAKE_LOCK"
+      ],
+      "foregroundServiceType": ["location", "microphone"]
     },
     "web": {
       "bundler": "metro",
@@ -41,7 +44,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-location",
         {
@@ -50,12 +52,7 @@
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-      [
-        "expo-notifications",
-        {
-          "mode": "automatic"
-        }
-      ]
+      ["expo-notifications", { "mode": "automatic" }]
     ],
     "experiments": {
       "typedRoutes": true
