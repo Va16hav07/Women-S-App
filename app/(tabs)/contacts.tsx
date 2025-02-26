@@ -43,7 +43,7 @@ export default function ContactsScreen() {
     }
   };
 
-  const renderContact = ({ item }) => (
+  const renderContact = ({ item }: { item: { id: string; name: string; phone: string } }) => (
     <View style={styles.contactCard}>
       <View style={styles.contactInfo}>
         <User size={24} color="#666" />

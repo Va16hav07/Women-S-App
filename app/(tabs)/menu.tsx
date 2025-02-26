@@ -16,7 +16,13 @@ export default function MenuScreen() {
     router.replace('/sign-in');
   };
 
-  const MenuItem = ({ icon, title, onPress }) => (
+  interface MenuItemProps {
+    icon: React.ReactNode;
+    title: string;
+    onPress: () => void;
+  }
+
+  const MenuItem: React.FC<MenuItemProps> = ({ icon, title, onPress }) => (
     <TouchableOpacity style={styles.menuItem} onPress={onPress}>
       <View style={styles.menuItemLeft}>
         {icon}
