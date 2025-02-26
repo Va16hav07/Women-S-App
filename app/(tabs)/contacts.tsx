@@ -12,6 +12,8 @@ import {
   StatusBar,
   SafeAreaView,
   KeyboardAvoidingView,
+  Linking,
+  Alert,
 } from 'react-native';
 import { Plus, User, Phone, X } from 'lucide-react-native';
 
@@ -62,16 +64,54 @@ export default function ContactsScreen() {
     }
   };
 
+  // Function to handle making a phone call
+  const handleCall = (phoneNumber: string) => {
+    // Format the phone number to ensure it works with Linking
+    const formattedPhoneNumber = `tel:${phoneNumber.replace(/\s+/g, '')}`;
+    
+    // Check if the device can make a phone call
+    Linking.canOpenURL(formattedPhoneNumber)
+      .then(supported => {
+        if (!supported) {
+          Alert.alert(
+            'Phone call not supported',
+            'Your device does not support making phone calls',
+            [{ text: 'OK' }]
+          );
+        } else {
+          return Linking.openURL(formattedPhoneNumber);
+        }
+      })
+      .catch(error => {
+        Alert.alert(
+          'Error',
+          'An error occurred while trying to make the call',
+          [{ text: 'OK' }]
+        );
+        console.error('Error making phone call:', error);
+      });
+  };
+
   const renderContact = ({ item }: { item: Contact }) => (
-    <View style={styles.contactCard}>
+    <TouchableOpacity 
+      style={styles.contactCard}
+      onPress={() => handleCall(item.phone)}
+      activeOpacity={0.7}
+    >
       <View style={styles.contactInfo}>
         <User size={normalize(24)} color="#666" />
         <View style={styles.contactTextContainer}>
           <Text style={styles.contactName} numberOfLines={1}>{item.name}</Text>
           <Text style={styles.contactPhone} numberOfLines={1}>{item.phone}</Text>
         </View>
+        <TouchableOpacity 
+          style={styles.callButton}
+          onPress={() => handleCall(item.phone)}
+        >
+          <Phone size={normalize(20)} color="#fff" />
+        </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -82,6 +122,8 @@ export default function ContactsScreen() {
       />
       <View style={styles.container}>
         <Text style={styles.header}>Emergency Contacts</Text>
+        
+        <Text style={styles.instructionText}>Tap a contact to call immediately</Text>
         
         <FlatList
           data={contacts}
@@ -170,8 +212,14 @@ const styles = StyleSheet.create({
   header: {
     fontSize: normalize(24),
     fontWeight: 'bold',
-    marginBottom: normalize(20),
+    marginBottom: normalize(8),
     color: '#1a1a1a',
+  },
+  instructionText: {
+    fontSize: normalize(14),
+    color: '#666',
+    marginBottom: normalize(20),
+    fontStyle: 'italic',
   },
   listContainer: {
     paddingBottom: normalize(80),
@@ -210,6 +258,14 @@ const styles = StyleSheet.create({
     fontSize: normalize(14),
     color: '#666',
     marginTop: normalize(4),
+  },
+  callButton: {
+    backgroundColor: '#FF4785',
+    width: normalize(40),
+    height: normalize(40),
+    borderRadius: normalize(20),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addButton: {
     position: 'absolute',
