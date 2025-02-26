@@ -1,11 +1,16 @@
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
 
 export async function registerForPushNotificationsAsync() {
   let token = null;
 
   try {
+    if (!Device.isDevice) {
+      console.log('Must use a physical device for Push Notifications');
+      return null;
+    }
+
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
         name: 'default',
@@ -13,11 +18,6 @@ export async function registerForPushNotificationsAsync() {
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF4785',
       });
-    }
-
-    if (!Device.isDevice) {
-      console.log('Must use a physical device for Push Notifications');
-      return null;
     }
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -30,6 +30,7 @@ export async function registerForPushNotificationsAsync() {
 
     if (finalStatus !== 'granted') {
       console.log('Push notification permissions denied');
+      Alert.alert('Permission Required', 'Push notifications are disabled. Enable them in settings.');
       return null;
     }
 
@@ -39,12 +40,18 @@ export async function registerForPushNotificationsAsync() {
     console.log('Expo Push Token:', token);
   } catch (error) {
     console.error('Error registering for push notifications:', error);
+    Alert.alert('Error', 'Failed to register for push notifications.');
   }
 
   return token;
 }
 
 export async function sendPushNotification(expoPushToken: string, title: string, body: string) {
+  if (!expoPushToken) {
+    console.error('❌ No valid Expo Push Token provided');
+    return;
+  }
+
   try {
     const message = {
       to: expoPushToken,
