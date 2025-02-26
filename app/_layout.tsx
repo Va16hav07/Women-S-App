@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import { Slot } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { auth } from '../lib/firebase';
 
 declare global {
   interface Window {
@@ -18,8 +17,12 @@ export default function RootLayout() {
 
   return (
     <>
-      <Slot />
       <StatusBar style="auto" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="contact-support" />
+      </Stack>
     </>
   );
 }

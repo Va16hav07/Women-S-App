@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter, Link } from 'expo-router';
 
 export default function SettingsScreen() {
   const [alertsEnabled, setAlertsEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const router = useRouter();
 
   const handleBack = () => {
-    // Navigation logic to go back
-    console.log('Going back');
+    router.back();
   };
 
   return (
@@ -68,11 +69,18 @@ export default function SettingsScreen() {
                 description="Frequently asked questions"
               />
               <View style={styles.separator} />
-              <TouchableOption 
-                icon="chatbubble-ellipses"
-                title="Contact Support"
-                description="Get help with any issues"
-              />
+              <Link href="/contact-support" asChild>
+                <TouchableOpacity style={styles.settingItem}>
+                  <View style={styles.settingInfo}>
+                    <Ionicons name="chatbubble-ellipses" size={24} color="#ff6b81" style={styles.icon} />
+                    <View>
+                      <Text style={styles.settingTitle}>Contact Support</Text>
+                      <Text style={styles.settingDescription}>Get help with any issues</Text>
+                    </View>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color="#999" />
+                </TouchableOpacity>
+              </Link>
               <View style={styles.separator} />
               <TouchableOption 
                 icon="information-circle"
@@ -123,11 +131,12 @@ interface TouchableOptionProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   description: string;
+  onPress?: () => void;
 }
 
-function TouchableOption({ icon, title, description }: TouchableOptionProps) {
+function TouchableOption({ icon, title, description, onPress }: TouchableOptionProps) {
   return (
-    <TouchableOpacity style={styles.settingItem}>
+    <TouchableOpacity style={styles.settingItem} onPress={onPress}>
       <View style={styles.settingInfo}>
         <Ionicons name={icon} size={24} color="#ff6b81" style={styles.icon} />
         <View>
