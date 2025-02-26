@@ -12,7 +12,7 @@ import {
 
 export default function MenuScreen() {
   const handleSignOut = () => {
-    // TODO: Implement sign out logic
+    // TODO: Implement sign-out logic
     router.replace('/sign-in');
   };
 
@@ -40,22 +40,22 @@ export default function MenuScreen() {
         <MenuItem
           icon={<User size={24} color="#666" />}
           title="Profile"
-          onPress={() => {}}
+          onPress={() => router.push('/profile')}
         />
         <MenuItem
           icon={<Settings size={24} color="#666" />}
           title="Settings"
-          onPress={() => {}}
+          onPress={() => router.push('/settings')}
         />
         <MenuItem
           icon={<Shield size={24} color="#666" />}
           title="Privacy"
-          onPress={() => {}}
+          onPress={() => router.push('/privacy')}
         />
         <MenuItem
           icon={<Phone size={24} color="#666" />}
           title="Contact Us"
-          onPress={() => {}}
+          onPress={() => router.push('/contact-us')}
         />
       </View>
 
