@@ -2,6 +2,15 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform, Alert } from 'react-native';
 
+// Configure how notifications appear when the app is in the foreground
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 export async function registerForPushNotificationsAsync() {
   let token = null;
 
@@ -81,4 +90,28 @@ export async function sendPushNotification(expoPushToken: string, title: string,
   } catch (error) {
     console.error('❌ Failed to send push notification:', error);
   }
+}
+
+// Function to set up notification listeners
+export function setupNotificationListeners(onNotificationReceived) {
+  const notificationListener = Notifications.addNotificationReceivedListener(
+    notification => {
+      if (onNotificationReceived) {
+        onNotificationReceived(notification);
+      }
+    }
+  );
+
+  const responseListener = Notifications.addNotificationResponseReceivedListener(
+    response => {
+      console.log('Notification response:', response);
+      // Handle notification response (e.g., navigate to a specific screen)
+    }
+  );
+
+  // Return cleanup function
+  return () => {
+    Notifications.removeNotificationSubscription(notificationListener);
+    Notifications.removeNotificationSubscription(responseListener);
+  };
 }

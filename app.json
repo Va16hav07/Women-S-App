@@ -2,12 +2,12 @@
   "expo": {
     "owner": "va16hav",
     "projectId": "bf6483a5-8fd6-4c95-93b5-26be6cd37999",
-    "name": "bolt-expo-nativewind",
-    "slug": "women",
+    "name": "SafeTravels",
+    "slug": "safe-travels",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "safetravels",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -16,26 +16,29 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide location-based services.",
-        "NSLocationAlwaysUsageDescription": "This app requires access to your location even when running in the background.",
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to provide safety features and emergency services.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires background location access to track your location during emergencies.",
+        "NSLocationAlwaysUsageDescription": "This app requires background location access to track your location during emergencies.",
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes for safety check-ins.",
         "UIBackgroundModes": ["location"]
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.safetravels"
     },
-      "android": {
-        "adaptiveIcon": {
-          "foregroundImage": "./assets/images/icon.png",
-          "backgroundColor": "#ffffff"
-        },
-        "package": "com.yourcompany.safetravels",
-        "permissions": [
-          "ACCESS_COARSE_LOCATION",
-          "ACCESS_FINE_LOCATION",
-          "ACCESS_BACKGROUND_LOCATION",
-          "FOREGROUND_SERVICE"
-        ]
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff"
       },
+      "package": "com.yourcompany.safetravels",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "CAMERA"
+      ]
+    },
     "web": {
       "bundler": "metro",
       "output": "single",
@@ -50,7 +53,13 @@
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-      ["expo-notifications", { "mode": "automatic" }]
+      ["expo-notifications", { "mode": "automatic" }],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan QR codes for safety check-ins."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
