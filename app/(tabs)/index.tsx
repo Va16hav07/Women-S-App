@@ -16,10 +16,10 @@ import { registerForPushNotificationsAsync, sendPushNotification } from '../../l
 import * as Location from 'expo-location';
 
 // Conditionally import MapView
-let MapView, Marker;
+let MapView: any, Marker: any;
 if (Platform.OS !== 'web') {
   try {
-    const Maps = require('react-native-maps');
+    const Maps = require('react-native-maps') as typeof import('react-native-maps');
     MapView = Maps.default;
     Marker = Maps.Marker;
   } catch (error) {
@@ -29,12 +29,12 @@ if (Platform.OS !== 'web') {
 
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [pushToken, setPushToken] = useState('');
-  const [isMapReady, setIsMapReady] = useState(false);
-  const [isLocationLoading, setIsLocationLoading] = useState(true);
-  const mapRef = useRef(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [pushToken, setPushToken] = useState<string>('');
+  const [isMapReady, setIsMapReady] = useState<boolean>(false);
+  const [isLocationLoading, setIsLocationLoading] = useState<boolean>(true);
+  const mapRef = useRef<any>(null);
 
   const isSmallDevice = width < 375;
   const isTablet = width >= 768;
@@ -72,7 +72,7 @@ export default function HomeScreen() {
   }, []);
 
   const handleEmergency = async () => {
-    if (!location) return Alert.alert('Error', 'Unable to get your location.');
+    if (!location?.coords) return Alert.alert('Error', 'Unable to get your location.');
 
     try {
       await sendEmergencySMS(
@@ -100,7 +100,7 @@ export default function HomeScreen() {
         <View style={styles.webLocationContainer}>
           <Text style={styles.webLocationText}>
             {isLocationLoading ? 'Fetching your location...' :
-            location ? `Lat: ${location.coords.latitude}\nLong: ${location.coords.longitude}`
+            location?.coords ? `Lat: ${location.coords.latitude}\nLong: ${location.coords.longitude}`
             : 'Location unavailable'}
           </Text>
         </View>
@@ -117,14 +117,14 @@ export default function HomeScreen() {
         ref={mapRef}
         style={styles.map}
         initialRegion={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+          latitude: location?.coords?.latitude ?? 0,
+          longitude: location?.coords?.longitude ?? 0,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
         onMapReady={() => setIsMapReady(true)}
       >
-        {isMapReady && (
+        {isMapReady && location?.coords && (
           <Marker coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }} title="You are here" />
         )}
       </MapView>
@@ -170,4 +170,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
+  webLocationContainer: { justifyContent: 'center', alignItems: 'center', padding: 20 },
+  webLocationText: { fontSize: 16, color: '#555', textAlign: 'center' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { fontSize: 16, color: '#555', marginTop: 10 },
 });
